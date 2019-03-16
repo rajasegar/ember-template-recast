@@ -303,6 +303,23 @@ QUnit.module('transform', () => {
 
     assert.equal(code, '{{wat-wat}}');
   });
+
+  QUnit.test('replacement with ElementNode', function(assert) {
+    let template = '{{foo-bar bar=foo}}';
+    let { code } = transform(template, env => {
+      let { builders: b } = env.syntax;
+      return {
+        MustacheStatement() {
+          return b.element(
+            { name: 'foo-bar', selfClosing: true },
+            { attrs: [b.attr('bar', b.text('foo'))] }
+          );
+        },
+      };
+    });
+
+    assert.equal(code, '<foo-bar bar="foo"></foo-bar>');
+  });
 });
 
 QUnit.module('whitespace and removed hash pairs', function() {
